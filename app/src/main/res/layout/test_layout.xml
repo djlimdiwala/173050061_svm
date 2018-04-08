@@ -3,12 +3,87 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView"
+
+    <Button
+        android:id="@+id/button_test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_weight="1"
-        android:text="test" />
+        android:text="TEST" />
+
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/button_test">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/count"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Correctly predicted datapoints" />
+
+            <TextView
+                android:id="@+id/count_value"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="-" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/total"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Total datapoints" />
+
+            <TextView
+                android:id="@+id/total_value"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="-" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/accu"
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="ACCURACY" />
+
+            <TextView
+                android:id="@+id/accu_value"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="-" />
+
+        </TableRow>
+
+
+    </TableLayout>
 </RelativeLayout>

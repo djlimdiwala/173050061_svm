@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
 import umich.cse.yctung.androidlibsvm.LibSVM;
 
 import java.io.BufferedReader;
@@ -29,11 +31,31 @@ public class train extends Fragment {
     private EditText options;
     private Button log;
     LibSVM svm;
+    private TextView svm_type;
+    private TextView kernel;
+    private TextView gamma;
+    private TextView sv;
+    private TextView bsv;
+    private TextView usv;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.train_layout, container, false);
+
+        svm_type = (TextView) view.findViewById(R.id.type_value);
+        kernel = (TextView) view.findViewById(R.id.kernel_value);
+        gamma = (TextView) view.findViewById(R.id.gamma_value);
+        sv = (TextView) view.findViewById(R.id.sv_value);
+        bsv = (TextView) view.findViewById(R.id.bsv_value);
+        usv = (TextView) view.findViewById(R.id.usv_value);
+
+        svm_type.setText("-");
+        kernel.setText("-");
+        gamma.setText("-");
+        sv.setText("-");
+        bsv.setText("-");
+        usv.setText("-");
 
         path = getActivity().getApplicationContext().getExternalFilesDir(null).toString();
         options = (EditText) view.findViewById(R.id.options);
@@ -48,7 +70,7 @@ public class train extends Fragment {
 
                 String train_options = options.getText().toString() + " ";
                 String path_train = path + File.separator + "train.csv";
-                String path_model = path + File.separator + "model.txt ";
+                String path_model = path + File.separator + "model.txt";
 
 
                 svm = new LibSVM();
@@ -58,7 +80,46 @@ public class train extends Fragment {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                svm.train(train_options + path_train + " " + path_model);
+                svm.train(train_options + path_train + " " + path_model + " ");
+
+
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(path_model));
+                    String line;
+//                    line = br.readLine();
+//                    String[] spl = line.split("\\s+");
+//                    Log.e("svm type",spl[1]);
+//                    svm_type.setText(spl[1]);
+//                    line = br.readLine();
+//                    spl = line.split(" ");
+//                    Log.e("kernel type",spl[1]);
+//                    kernel.setText(spl[1]);
+//                    line = br.readLine();
+//                    spl = line.split(" ");
+//                    Log.e("gamma",spl[1]);
+//                    gamma.setText(spl[1]);
+//                    line = br.readLine();
+//                    line = br.readLine();
+//                    spl = line.split(" ");
+//                    Log.e("Support vectors",spl[1]);
+//                    sv.setText(spl[1]);
+//                    line = br.readLine();
+//                    line = br.readLine();
+//                    line = br.readLine();
+//                    spl = line.split(" ");
+//                    Log.e("Bounded Support vectors",spl[1]);
+//                    Log.e("UnboundedSupportvectors",spl[2]);
+//                    bsv.setText(spl[1]);
+//                    usv.setText(spl[2]);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+//                catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
+
             }
         });
 
@@ -85,17 +146,17 @@ public String convert_file_format(String csv_path) throws FileNotFoundException 
             if (tokens.length == 7)
             {
                 if (tokens[6].equals("Stationary"))
-            {
-                output_line = "1 1:" + tokens[1] + " 2:" + tokens[2] + " 3:" + tokens[3] + " 4:" + tokens[4] + " 5:" + tokens[5] + "\n";
-                stream.write(output_line.getBytes());
+                {
+                    output_line = "1 1:" + tokens[3] + " 2:" + tokens[4] + " 3:" + tokens[5] + "\n";
+                    stream.write(output_line.getBytes());
 
-            }
-            else
-            {
-                output_line = "-1 1:" + tokens[1] + " 2:" + tokens[2] + " 3:" + tokens[3] + " 4:" + tokens[4] + " 5:" + tokens[5] + "\n";
-                stream.write(output_line.getBytes());
+                }
+                else
+                {
+                    output_line = "-1 1:" + tokens[3] + " 2:" + tokens[4] + " 3:" + tokens[5] + "\n";
+                    stream.write(output_line.getBytes());
 
-            }
+                }
             }
             else
             {
