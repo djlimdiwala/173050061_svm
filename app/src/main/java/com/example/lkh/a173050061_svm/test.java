@@ -35,6 +35,10 @@ public class test extends Fragment {
     private TextView cou;
     private TextView tot;
     private TextView accu;
+    float Tp = 0;
+    float Tn = 0;
+    float Fp = 0;
+    float Fn = 0;
 
 
     @Nullable
@@ -130,6 +134,7 @@ public class test extends Fragment {
                 y = 0;
                 z = 0;
                 co = 0;
+                Tp = 122;
 
                 String[] tokens = line.split(",");
                 if (tokens.length == 7) {
@@ -226,6 +231,7 @@ public class test extends Fragment {
             String line;
             line = br.readLine();
             line = br.readLine();
+            Fn = -122;
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split(",");
                 if (tokens.length == 7)
@@ -276,10 +282,7 @@ public class test extends Fragment {
 
 
 
-        float Tp = 0;
-        float Tn = 0;
-        float Fp = 0;
-        float Fn = 0;
+
         String output_csv = path + File.separator + "output.csv";
         FileOutputStream stream = new FileOutputStream(output_csv);
         BufferedReader br1 = new BufferedReader(new FileReader(csv_path));
