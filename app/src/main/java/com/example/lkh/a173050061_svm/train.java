@@ -227,7 +227,7 @@ public String convert_file_format(String csv_path) throws FileNotFoundException 
 
         }
         stream.close();
-        Log.e("No. training samples:- ", Integer.parseInt(samples));
+        Log.e("No. training samples:- ", String.valueOf(samples));
     } catch (FileNotFoundException e) {
         e.printStackTrace();
     } catch (IOException e) {

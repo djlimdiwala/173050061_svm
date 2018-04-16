@@ -3,6 +3,7 @@ package com.example.lkh.a173050061_svm;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -275,6 +276,10 @@ public class test extends Fragment {
 
 
 
+        float Tp = 0;
+        float Tn = 0;
+        float Fp = 0;
+        float Fn = 0;
         String output_csv = path + File.separator + "output.csv";
         FileOutputStream stream = new FileOutputStream(output_csv);
         BufferedReader br1 = new BufferedReader(new FileReader(csv_path));
@@ -296,9 +301,28 @@ public class test extends Fragment {
                 if (line2.equals("1")) {
                     line1 = line1 + ",Stationary\n";
                     stream.write(line1.getBytes());
+                    if (tokens[6].equals("Stationary"))
+                    {
+                        Log.e("check", tokens[6]);
+                        Tp++;
+                    }
+                    else
+                    {
+                        Fp++;
+                    }
+
                 } else {
                     line1 = line1 + ",Walking\n";
                     stream.write(line1.getBytes());
+                    if (tokens[6].equals("Walking"))
+                    {
+                        Tn++;
+                    }
+                    else
+                    {
+                        Fn++;
+                    }
+
                 }
             }
             else {
@@ -307,6 +331,16 @@ public class test extends Fragment {
 
         }
 
+
+        Log.e("TP", String.valueOf(Tp));
+        Log.e("FP", String.valueOf(Fp));
+        Log.e("TN", String.valueOf(Tn));
+        Log.e("FN", String.valueOf(Fn));
+
+
+        Log.e("acc", String.valueOf((Tn + Tp) / (Tn + Tp + Fp + Fn)));
+        Log.e("precision", String.valueOf(Tp / (Tp + Fp)));
+        Log.e("recall", String.valueOf(Tp / (Tp + Fn)));
     }
 
 
