@@ -1,6 +1,5 @@
 package com.example.lkh.a173050061_svm;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import umich.cse.yctung.androidlibsvm.LibSVM;
 
@@ -83,6 +83,8 @@ public class train extends Fragment {
                 svm.train(train_options + path_train + " " + path_model + " ");
 
 
+                Toast.makeText(getActivity(), "Model trained....",
+                        Toast.LENGTH_LONG).show();
                 try {
                     BufferedReader br = new BufferedReader(new FileReader(path_model));
                     String line;
@@ -133,38 +135,99 @@ public String convert_file_format(String csv_path) throws FileNotFoundException 
 
     String output_line;
 
+    int samples = 0;
     String path_full = path + File.separator + "train.txt";
     FileOutputStream stream = new FileOutputStream(path_full);
-//    stream.write(str.getBytes());
 
     try (BufferedReader br = new BufferedReader(new FileReader(csv_path))) {
         String line;
         line = br.readLine();
         line = br.readLine();
+        int w,s, frame = 50, co;
+        float x,y,z;
         while ((line = br.readLine()) != null) {
+            w = 0;
+            s = 0;
+            x = 0;
+            y = 0;
+            z = 0;
+            co = 0;
+
+
+
             String[] tokens = line.split(",");
-            if (tokens.length == 7)
-            {
-                if (tokens[6].equals("Stationary"))
-                {
-                    output_line = "1 1:" + tokens[3] + " 2:" + tokens[4] + " 3:" + tokens[5] + "\n";
-                    stream.write(output_line.getBytes());
+            if (tokens.length == 7) {
+                x = x + Float.parseFloat(tokens[3]);
+                y = y + Float.parseFloat(tokens[4]);
+                z = z + Float.parseFloat(tokens[5]);
+                co++;
+                samples++;
+                if (tokens[6].equals("Stationary")) {
+                    s++;
+
+                } else {
+                    w++;
+
+                }
+            } else {
+                line = br.readLine();
+
+            }
+
+
+
+            for (int it = 0; it < frame - 1; it++) {
+
+
+                if((line = br.readLine()) != null) {
+                    tokens = line.split(",");
+
+                    if (tokens.length == 7) {
+                        samples++;
+                        x = x + Float.parseFloat(tokens[3]);
+                        y = y + Float.parseFloat(tokens[4]);
+                        z = z + Float.parseFloat(tokens[5]);
+                        co++;
+                        if (tokens[6].equals("Stationary")) {
+                            s++;
+
+
+                        } else {
+                            w++;
+
+                        }
+                    } else {
+                        line = br.readLine();
+                    }
 
                 }
                 else
                 {
-                    output_line = "-1 1:" + tokens[3] + " 2:" + tokens[4] + " 3:" + tokens[5] + "\n";
-                    stream.write(output_line.getBytes());
-
+                    break;
                 }
             }
-            else
-            {
-                line = br.readLine();
 
-            }
+
+            x = x / co;
+            y = y / co;
+            z = z / co;
+        if (w > s)
+        {
+            output_line = "-1 1:" + String.valueOf(x) + " 2:" + String.valueOf(y) + " 3:" + String.valueOf(z) + "\n";
+            stream.write(output_line.getBytes());
+        }
+        else
+        {
+            output_line = "1 1:" + String.valueOf(x) + " 2:" + String.valueOf(y) + " 3:" + String.valueOf(z) + "\n";
+            stream.write(output_line.getBytes());
+        }
+
+
+
+
         }
         stream.close();
+        Log.e("No. training samples:- ", Integer.parseInt(samples));
     } catch (FileNotFoundException e) {
         e.printStackTrace();
     } catch (IOException e) {

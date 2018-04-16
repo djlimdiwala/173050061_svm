@@ -3,13 +3,13 @@ package com.example.lkh.a173050061_svm;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -69,13 +69,34 @@ public class test extends Fragment {
                     e.printStackTrace();
                 }
                 svm.predict(path_test + " " + model_file + output + " ");
-
                 try {
                     float accuracy = find_accuracy(original, output);
-//                    Log.e("accuracy",Integer.toString(accuracy));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
+
+                path_test = path + File.separator + "test.csv";
+                try {
+                    path_test = convert_file_format_test(path_test, original);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                svm.predict(path_test + " " + model_file + output + " ");
+
+                path_test = path + File.separator + "test.csv";
+
+                try {
+                    save_output(path_test,output);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getActivity(), "Check accuracy....",
+                        Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -86,6 +107,110 @@ public class test extends Fragment {
 
 
     public String convert_file_format(String csv_path, String original_path) throws FileNotFoundException {
+
+
+        String output_line;
+
+        String path_full = path + File.separator + "test.txt";
+        FileOutputStream stream = new FileOutputStream(path_full);
+        FileOutputStream stream1 = new FileOutputStream(original_path);
+
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csv_path))) {
+            String line;
+            line = br.readLine();
+            line = br.readLine();
+            int w,s, frame = 50, co;
+            float x,y,z;
+            while ((line = br.readLine()) != null) {
+                w = 0;
+                s = 0;
+                x = 0;
+                y = 0;
+                z = 0;
+                co = 0;
+
+                String[] tokens = line.split(",");
+                if (tokens.length == 7) {
+                    x = x + Float.parseFloat(tokens[3]);
+                    y = y + Float.parseFloat(tokens[4]);
+                    z = z + Float.parseFloat(tokens[5]);
+                    co++;
+                    if (tokens[6].equals("Stationary")) {
+                        s++;
+                    } else {
+                        w++;
+
+                    }
+                } else {
+                    line = br.readLine();
+
+                }
+
+
+
+                for (int it = 0; it < frame - 1; it++) {
+
+
+                    if((line = br.readLine()) != null) {
+                        tokens = line.split(",");
+                        if (tokens.length == 7) {
+                            x = x + Float.parseFloat(tokens[3]);
+                            y = y + Float.parseFloat(tokens[4]);
+                            z = z + Float.parseFloat(tokens[5]);
+                            co++;
+                            if (tokens[6].equals("Stationary")) {
+                                s++;
+
+                            } else {
+                                w++;
+                            }
+                        } else {
+                            line = br.readLine();
+                        }
+
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+
+                x = x / co;
+                y = y / co;
+                z = z / co;
+                if (w > s)
+                {
+                    output_line = "-1 1:" + String.valueOf(x) + " 2:" + String.valueOf(y) + " 3:" + String.valueOf(z) + "\n";
+                    stream.write(output_line.getBytes());
+                    stream1.write("-1\n".getBytes());
+                }
+                else
+                {
+                    output_line = "1 1:" + String.valueOf(x) + " 2:" + String.valueOf(y) + " 3:" + String.valueOf(z) + "\n";
+                    stream.write(output_line.getBytes());
+                    stream1.write("1\n".getBytes());
+                }
+
+
+
+
+            }
+            stream.close();
+            stream1.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return path_full;
+    }
+
+
+
+
+    public String convert_file_format_test(String csv_path, String original_path) throws FileNotFoundException {
 
 
 
@@ -136,6 +261,66 @@ public class test extends Fragment {
 
         return path_full;
     }
+
+
+
+
+
+
+
+
+
+    public void save_output(String csv_path, String original_path) throws IOException {
+
+
+
+
+        String output_csv = path + File.separator + "output.csv";
+        FileOutputStream stream = new FileOutputStream(output_csv);
+        BufferedReader br1 = new BufferedReader(new FileReader(csv_path));
+        BufferedReader br2 = new BufferedReader(new FileReader(original_path));
+        String line1;
+        String line2;
+
+        line1 = br1.readLine() + "\n";
+        stream.write(line1.getBytes());
+        line1 = br1.readLine() + ",prediction\n";
+        stream.write(line1.getBytes());
+
+
+        while ((line1 = br1.readLine()) != null) {
+
+            String[] tokens = line1.split(",");
+            if (tokens.length == 7 && !tokens[0].equals("Timestamp")) {
+                line2 = br2.readLine();
+                if (line2.equals("1")) {
+                    line1 = line1 + ",Stationary\n";
+                    stream.write(line1.getBytes());
+                } else {
+                    line1 = line1 + ",Walking\n";
+                    stream.write(line1.getBytes());
+                }
+            }
+            else {
+                line1 = br1.readLine();
+            }
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public float find_accuracy (String original_path, String output_path) throws IOException {
